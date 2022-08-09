@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "b5a687c5-5920-45a1-80bc-07123ea9b959",
+		"name": "Azure IoT Hub twin operation collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8831493"
+	},
+	"item": [
+		{
+			"name": "RegisterDeviceThroughDeviceProvisioningService",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var resourceUri = \"0ne002EE24E/registrations/cXdlX3F3ZV9xX3F3ZQ\" // The resource uri containing scopeId of the enrollment group/registrations/deviceId",
+							"var deviceId = \"cXdlX3F3ZV9xX3F3ZQ\"; // DeviceId which will be registered",
+							"",
+							"resourceUri = encodeURIComponent(resourceUri.toLowerCase()); // Encode the url",
+							"",
+							"var expires = Math.ceil((Date.now() / 1000) + 10); // Expire the token 60 minutes from now",
+							"",
+							"var toSign = resourceUri + \"\\n\" + expires; // this is the string format to gen signature from",
+							"",
+							" var crypted = CryptoJS.HmacSHA256(deviceId, CryptoJS.enc.Base64.parse(\"OLCc1142LREdkcFM4hcrJMKplXGe3mw0F2395KfmAXYemroeCatAWqMGEj4Yoe7owEY/vze5mh6iJlz7Q7hfiw==\"));// The SHA256 key is the Base64 decoded version of the IoT Hub key",
+							"",
+							"var signature = CryptoJS.HmacSHA256(toSign, crypted); // The signature generated from the decodedKey",
+							"var encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature)); // The url encoded version of the Base64 signature",
+							"",
+							"// Construct authorization string (shared access signature)",
+							"var iotHubSasToken = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&se=\" + expires;",
+							"",
+							"console.log(iotHubSasToken);",
+							"postman.setGlobalVariable(\"token\", iotHubSasToken);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "get register token from proxy and place it hete,change the device id in header",
+						"type": "text"
+					},
+					{
+						"key": "Content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"registrationId\": \"cXdlX3F3ZV9xX3F3ZQ\"\r\n}"
+				},
+				"url": {
+					"raw": "https://global.azure-devices-provisioning.net/0ne002EE24E/registrations/cXdlX3F3ZV9xX3F3ZQ/register?api-version=2018-11-01",
+					"protocol": "https",
+					"host": [
+						"global",
+						"azure-devices-provisioning",
+						"net"
+					],
+					"path": [
+						"0ne002EE24E",
+						"registrations",
+						"cXdlX3F3ZV9xX3F3ZQ",
+						"register"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2018-11-01"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetDeviceTwin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = JSON.parse(responseBody);",
+							"",
+							"pm.test(\"Response code is 200\", () => {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Response contains deviceId and Properties\", () => {",
+							"   responseBody.has(\"deviceId\");",
+							"   responseBody.has(\"properties\");",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"postman.setGlobalVariable(\"hubName\", 'iothub-iomt-iothub-v1-dev-westeurope');",
+							"postman.setGlobalVariable(\"expiresInMins\", 1);",
+							"postman.setGlobalVariable(\"deviceId\", \"cXdlX3F3ZV9xX3F3ZQ\");",
+							"postman.setGlobalVariable(\"signingKey\", \"lb8gbUszhe281H1qsFOQ9mxji8X5ZqzWUjlntBOPTF8=\"); // It is taken form dev iot hub then sharedaccesspolicies and copy primary key",
+							"",
+							"var resourceUri = encodeURIComponent(postman.getGlobalVariable(\"hubName\") + '.azure-devices.net'); // The resource uri",
+							"var expiry = Math.ceil((Date.now() / 1000) + postman.getGlobalVariable(\"expiresInMins\") * 60); // Expire the token 60 minutes from now",
+							"var uriExpiry = resourceUri + '\\n' + expiry; // this is the string format to gen signature from",
+							"var decodedKey = CryptoJS.enc.Base64.parse(postman.getGlobalVariable(\"signingKey\")); // The SHA256 key is the Base64 decoded version of the IoT Hub key",
+							"var signature = CryptoJS.HmacSHA256(uriExpiry, decodedKey); // The signature generated from the decodedKey",
+							"var encodedUri = encodeURIComponent(CryptoJS.enc.Base64.stringify(signature)); // The url encoded version of the Base64 signature",
+							"",
+							"// Construct authorization string (shared access signature)",
+							"var token = \"SharedAccessSignature sr=\" + resourceUri + \"&sig=\" + encodedUri + \"&se=\" + expiry +\"&skn=iothubowner\";",
+							"",
+							"console.log(token);",
+							"postman.setGlobalVariable(\"token\", token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"description": "get register token from proxy and place it hete,change the device id in header",
+						"type": "text"
+					},
+					{
+						"key": "Content-type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "https://{{hubName}}.azure-devices.net/twins/{{deviceId}}?api-version=2016-11-14",
+					"protocol": "https",
+					"host": [
+						"{{hubName}}",
+						"azure-devices",
+						"net"
+					],
+					"path": [
+						"twins",
+						"{{deviceId}}"
+					],
+					"query": [
+						{
+							"key": "api-version",
+							"value": "2016-11-14"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
