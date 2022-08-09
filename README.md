@@ -17,6 +17,15 @@ If using key-based authentication, a security token is passed in the HTTP Auth
 
 SharedAccessSignature sig={signature}&se={expiry}&skn={policyName}&sr={URL-encoded-resourceURI}
 
+
+Request Body:
+
+{
+
+   "registrationId": "cXdlX3F3ZV9xX3F3ZQ"
+  
+}
+
 SasToken example:
 
 SharedAccessSignature sr=0ne002ee24e%2Fregistrations%2Fcxdlx3f3zv9xx3f3zq&sig=mM%2F%2BCl4qA8zrjhG3gBC%2Fbgw6xqftBf3eL6%2BgPQ%2FaPu8%3D&se=1660075663
