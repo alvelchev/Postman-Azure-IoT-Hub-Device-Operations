@@ -16,7 +16,7 @@ jobs:
       - name: Run Newman
         uses: docker://postman/newman:latest
         with:
-          args: run Azure IoT Hub twin operation collection.postman_collection.json --reporters cli,junit --reporter-junit-export results.xml
+          args: run AzureOperationsCollection.json --reporters cli,junit --reporter-junit-export results.xml
 
       - name: Report
         uses: dorny/test-reporter@v1
