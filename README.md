@@ -1,3 +1,9 @@
+# Git Hub action to run Postman Collection integration tests
+
+- https://octopus.com/blog/githubactions-running-endtoend-tests
+
+Reference: https://github.com/OctopusSamples/junit-newman-test/blob/main/GitHubTree.json
+
 # Azure IoTHub Device Operations
 This is a Postman collection which allows basic device operations executed via Postman using javascript.
 &nbsp;
