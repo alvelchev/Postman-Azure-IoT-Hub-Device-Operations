@@ -1,3 +1,4 @@
+[![Cypress](https://github.com/alvelchev/Postman-Azure-IoT-Hub-Device-Operations/actions/workflows/newman.yaml/badge.svg)](https://github.com/alvelchev/Postman-Azure-IoT-Hub-Device-Operations/actions/workflows/newman.yaml)
 # Git Hub action to run Postman Collection integration tests
 
 - https://octopus.com/blog/githubactions-running-endtoend-tests
